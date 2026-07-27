@@ -1,0 +1,47 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "./generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ContactCategory {
+  FAMILY
+  FRIENDS
+  WORK
+  SCHOOL
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  contacts Contact[]
+
+  @@map("users")
+}
+
+model Contact {
+  id           String           @id @default(uuid())
+  name         String
+  phone        String
+  email        String?
+  birthday     DateTime?        @db.Date
+  category     ContactCategory?
+  observations String?          @db.VarChar(255)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  @@index([userId])
+  @@map("contacts")
+}
