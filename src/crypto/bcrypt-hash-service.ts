@@ -4,7 +4,7 @@ import { compare, hash } from 'bcrypt'
 import { HashService } from './hash-service'
 
 @Injectable()
-export class BcryptHashService extends HashService {
+export class BcryptHashService implements HashService {
   private readonly SALT_ROUNDS = 8
 
   hash(value: string): Promise<string> {

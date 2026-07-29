@@ -13,7 +13,12 @@ const config: Config = {
     '!src/**/*.spec.ts',
     '!src/**/*.module.ts',
     '!src/main.ts',
+    '!src/config/**',
+    '!src/database/**',
+    '!src/env/**',
     '!src/generated/**',
+    '!src/modules/**/infra/**',
+    '!src/modules/**/presentation/**',
   ],
   coverageDirectory: 'coverage',
 }

@@ -18,7 +18,7 @@
     },
     "incremental": true,
     "skipLibCheck": true,
-    "types": ["bcrypt", "jest", "node"],
+    "types": ["jest", "node"],
     "strict": true,
     "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true,
