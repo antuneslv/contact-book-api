@@ -1,20 +1,16 @@
-import ms, { StringValue } from 'ms'
 import { z } from 'zod'
 
-const stringExpiresInSchema = z
-  .string()
-  .refine(
-    (value): value is StringValue => ms(value as StringValue) !== undefined,
-    {
-      message:
-        'JWT_EXPIRES_IN must be a valid value like 5m, 1h, 2 days, or 100',
-    },
-  )
+import { isDuration } from '@/utils/duration/duration'
 
 export const envSchema = z.object({
   DATABASE_URL: z.url(),
   JWT_SECRET: z.string().min(32),
-  JWT_EXPIRES_IN: z.union([z.number(), stringExpiresInSchema]).default('5m'),
+  JWT_EXPIRES_IN: z
+    .string()
+    .refine(isDuration, {
+      message: 'JWT_EXPIRES_IN must be a value like 30s, 15m, 2h or 7d',
+    })
+    .default('30m'),
   PORT: z.coerce.number().default(3000),
 })
 
