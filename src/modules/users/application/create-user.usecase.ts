@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 
-import { HashService } from '@/crypto/hash-service'
+import { HashService } from '@/crypto/hash.service'
 import { Either, left, right } from '@/utils/either'
 
 import { UsersRepository } from '../domain/users.repository'

@@ -27,16 +27,6 @@ export class UsersController {
     description: 'The user has been successfully created.',
     type: UserResponse,
   })
-  @ApiConflictResponse({
-    description: 'A user with the provided email already exists.',
-    schema: {
-      example: {
-        statusCode: 409,
-        message: 'User already exists',
-        error: 'Conflict',
-      },
-    },
-  })
   @ApiBadRequestResponse({
     description: 'Invalid request payload.',
     schema: {
@@ -44,10 +34,20 @@ export class UsersController {
         statusCode: 400,
         message: [
           'name should not be empty',
-          'email must be an email address',
+          'email must be an email',
           'password must be longer than or equal to 6 characters',
         ],
         error: 'Bad Request',
+      },
+    },
+  })
+  @ApiConflictResponse({
+    description: 'A user with the provided email already exists.',
+    schema: {
+      example: {
+        statusCode: 409,
+        message: 'User already exists',
+        error: 'Conflict',
       },
     },
   })

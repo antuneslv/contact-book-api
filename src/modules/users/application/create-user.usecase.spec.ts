@@ -1,12 +1,12 @@
 import { ConflictException } from '@nestjs/common'
 
-import { BcryptHashService } from '@/crypto/bcrypt-hash-service'
+import { FakeHashService } from '@/crypto/fake-hash.service'
 
 import { CreateUserUseCase } from './create-user.usecase'
 import { UsersInMemoryRepository } from '../infra/users-in-memory.repository'
 
 let usersRepository: UsersInMemoryRepository
-let bcryptHashService: BcryptHashService
+let hashService: FakeHashService
 let sut: CreateUserUseCase
 
 const createUserRequest = {
@@ -18,8 +18,8 @@ const createUserRequest = {
 describe('CreateUserUseCase', () => {
   beforeEach(() => {
     usersRepository = new UsersInMemoryRepository()
-    bcryptHashService = new BcryptHashService()
-    sut = new CreateUserUseCase(usersRepository, bcryptHashService)
+    hashService = new FakeHashService()
+    sut = new CreateUserUseCase(usersRepository, hashService)
   })
 
   it('should create a new user', async () => {
@@ -37,7 +37,7 @@ describe('CreateUserUseCase', () => {
   it('should hash user password upon creation', async () => {
     await sut.execute(createUserRequest)
 
-    const isPasswordCorrectlyHashed = await bcryptHashService.compare(
+    const isPasswordCorrectlyHashed = await hashService.compare(
       '123456',
       usersRepository.users[0].password,
     )

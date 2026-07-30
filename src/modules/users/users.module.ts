@@ -17,5 +17,6 @@ import { UsersController } from './presentation/users.controller'
       useClass: UsersPrismaRepository,
     },
   ],
+  exports: [UsersRepository],
 })
 export class UsersModule {}
