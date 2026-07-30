@@ -15,6 +15,7 @@ import { TokenService } from './token.service'
       useFactory(envService: EnvService) {
         return {
           secret: envService.get('JWT_SECRET'),
+          signOptions: { expiresIn: envService.get('JWT_EXPIRES_IN') },
         }
       },
     }),

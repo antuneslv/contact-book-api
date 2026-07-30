@@ -11,7 +11,7 @@ let hashService: FakeHashService
 let tokenService: FakeTokenService
 let sut: AuthenticateUserUseCase
 
-const userCredentials = {
+const USER_CREDENTIALS = {
   email: 'johndoe@example.com',
   password: '123456',
 }
@@ -37,7 +37,7 @@ describe('AuthenticateUserUseCase', () => {
       password,
     })
 
-    const result = await sut.execute(userCredentials)
+    const result = await sut.execute(USER_CREDENTIALS)
 
     expect(result.isRight()).toBe(true)
 
@@ -55,7 +55,24 @@ describe('AuthenticateUserUseCase', () => {
       password,
     })
 
-    const result = await sut.execute(userCredentials)
+    const result = await sut.execute(USER_CREDENTIALS)
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(UnauthorizedException)
+  })
+
+  it('should not be able to authenticate a user if email is not provided', async () => {
+    const password = await hashService.hash('123456')
+
+    await usersRepository.createUser({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password,
+    })
+
+    const result = await sut.execute({
+      password: '123456',
+    } as typeof USER_CREDENTIALS)
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(UnauthorizedException)

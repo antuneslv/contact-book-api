@@ -9,7 +9,7 @@ let usersRepository: UsersInMemoryRepository
 let hashService: FakeHashService
 let sut: CreateUserUseCase
 
-const createUserRequest = {
+const CREATE_USER_REQUEST = {
   name: 'John Doe',
   email: 'johndoe@example.com',
   password: '123456',
@@ -23,7 +23,7 @@ describe('CreateUserUseCase', () => {
   })
 
   it('should create a new user', async () => {
-    const result = await sut.execute(createUserRequest)
+    const result = await sut.execute(CREATE_USER_REQUEST)
 
     expect(result.isRight()).toBe(true)
 
@@ -35,7 +35,7 @@ describe('CreateUserUseCase', () => {
   })
 
   it('should hash user password upon creation', async () => {
-    await sut.execute(createUserRequest)
+    await sut.execute(CREATE_USER_REQUEST)
 
     const isPasswordCorrectlyHashed = await hashService.compare(
       '123456',
@@ -46,8 +46,8 @@ describe('CreateUserUseCase', () => {
   })
 
   it('should not be able to create a user with the same email twice', async () => {
-    await sut.execute(createUserRequest)
-    const result = await sut.execute(createUserRequest)
+    await sut.execute(CREATE_USER_REQUEST)
+    const result = await sut.execute(CREATE_USER_REQUEST)
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ConflictException)
