@@ -46,7 +46,7 @@ describe('AuthenticateUserUseCase', () => {
     })
   })
 
-  it('should not be able to authenticate a user with wrong credentials', async () => {
+  it('should return a generic unauthorized error when authenticating with an invalid password', async () => {
     const password = await hashService.hash('abcdef')
 
     await usersRepository.createUser({
@@ -61,7 +61,7 @@ describe('AuthenticateUserUseCase', () => {
     expect(result.value).toBeInstanceOf(UnauthorizedException)
   })
 
-  it('should not be able to authenticate a user if email is not provided', async () => {
+  it('should return a generic unauthorized error when authenticating with an invalid email', async () => {
     const password = await hashService.hash('123456')
 
     await usersRepository.createUser({
@@ -71,8 +71,9 @@ describe('AuthenticateUserUseCase', () => {
     })
 
     const result = await sut.execute({
+      email: 'another.email@example.com',
       password: '123456',
-    } as typeof USER_CREDENTIALS)
+    })
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(UnauthorizedException)
