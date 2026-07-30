@@ -1,4 +1,4 @@
-import { Either, left, right } from '@/utils/either'
+import { Either, left, right } from './either'
 
 function doSomething(shouldSuccess: boolean): Either<string, number> {
   return shouldSuccess ? right(10) : left('error')

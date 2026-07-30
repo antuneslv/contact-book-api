@@ -3,7 +3,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { HashService } from '@/crypto/hash.service'
 import { TokenService } from '@/crypto/token.service'
 import { UsersRepository } from '@/modules/users/domain/users.repository'
-import { Either, left, right } from '@/utils/either'
+import { Either, left, right } from '@/utils/either/either'
 
 type AuthenticateUserInput = {
   email: string
