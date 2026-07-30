@@ -1,23 +1,36 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Get, Post } from '@nestjs/common'
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
+
+import { type TokenPayload } from '@/crypto/token.service'
+import { CurrentUser } from '@/decorators/current-user.decorator'
+import { Public } from '@/decorators/public.decorator'
 
 import { CreateUserRequest } from './dtos/create-user.request'
 import { UserResponse } from './dtos/user.response'
 import { CreateUserUseCase } from '../application/create-user.usecase'
+import { GetUserUseCase } from '../application/get-user.usecase'
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly getUserUseCase: GetUserUseCase,
+  ) {}
 
   @Post()
+  @Public()
   @ApiOperation({
     summary: 'Create a new user',
     description:
@@ -62,6 +75,60 @@ export class UsersController {
   })
   async create(@Body() body: CreateUserRequest): Promise<UserResponse> {
     const result = await this.createUserUseCase.execute(body)
+
+    if (result.isLeft()) {
+      throw result.value
+    }
+
+    return result.value
+  }
+
+  @Get('/me')
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Get user',
+    description: 'Retrieves the user.',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully retrieved.',
+    type: UserResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Authentication token is missing or invalid.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: [
+          'Missing authorization header',
+          'Invalid authorization format',
+          'Missing token',
+          'Invalid token',
+        ],
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: 'The requested user was not found.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'User not found',
+        error: 'Not Found',
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+    schema: {
+      example: {
+        statusCode: 500,
+        message: 'Internal server error',
+      },
+    },
+  })
+  async get(@CurrentUser() payload: TokenPayload): Promise<UserResponse> {
+    const result = await this.getUserUseCase.execute(payload.sub)
 
     if (result.isLeft()) {
       throw result.value

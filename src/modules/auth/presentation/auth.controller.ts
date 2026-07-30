@@ -8,12 +8,15 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
 
+import { Public } from '@/decorators/public.decorator'
+
 import { AuthenticateUserRequest } from './dtos/authenticate-user.request'
 import { AuthenticateUserResponse } from './dtos/authenticate-user.response'
 import { AuthenticateUserUseCase } from '../application/authenticate-user.usecase'
 
 @ApiTags('Authentication')
 @Controller('auth')
+@Public()
 export class AuthController {
   constructor(
     private readonly authenticateUserUseCase: AuthenticateUserUseCase,

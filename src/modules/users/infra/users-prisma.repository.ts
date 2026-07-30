@@ -8,6 +8,14 @@ import { CreateUser, User, UsersRepository } from '../domain/users.repository'
 export class UsersPrismaRepository implements UsersRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
+  findUserById(id: string): Promise<User | null> {
+    return this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+    })
+  }
+
   findUserByEmail(email: string): Promise<User | null> {
     return this.prismaService.user.findUnique({
       where: {

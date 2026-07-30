@@ -5,6 +5,10 @@ import { CreateUser, User, UsersRepository } from '../domain/users.repository'
 export class UsersInMemoryRepository implements UsersRepository {
   public users: User[] = []
 
+  findUserById(id: string): Promise<User | null> {
+    return Promise.resolve(this.users.find(user => user.id === id) ?? null)
+  }
+
   findUserByEmail(email: string): Promise<User | null> {
     return Promise.resolve(
       this.users.find(user => user.email === email) ?? null,

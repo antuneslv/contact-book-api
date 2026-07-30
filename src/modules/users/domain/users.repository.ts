@@ -10,6 +10,7 @@ export type User = {
 export type CreateUser = Omit<User, 'id' | 'createdAt' | 'updatedAt'>
 
 export abstract class UsersRepository {
+  abstract findUserById(id: string): Promise<User | null>
   abstract findUserByEmail(email: string): Promise<User | null>
   abstract createUser(user: CreateUser): Promise<User>
 }
