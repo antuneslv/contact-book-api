@@ -14,16 +14,9 @@ type UpdateUserPasswordInput = {
   newPassword: string
 }
 
-type UpdateUserPasswordOutput = {
-  id: string
-  name: string
-  email: string
-  createdAt: Date
-}
-
 type UpdateUserPasswordUseCaseResponse = Either<
   NotFoundException | ForbiddenException,
-  UpdateUserPasswordOutput
+  null
 >
 
 @Injectable()
@@ -52,16 +45,10 @@ export class UpdateUserPasswordUseCase {
       return left(new ForbiddenException('Invalid current password'))
     }
 
-    const updatedUser = await this.usersRepository.updateUserPassword(
-      userId,
-      newPassword,
-    )
+    const hashedPassword = await this.hashService.hash(newPassword)
 
-    return right({
-      id: updatedUser.id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      createdAt: updatedUser.createdAt,
-    })
+    await this.usersRepository.updateUserPassword(userId, hashedPassword)
+
+    return right(null)
   }
 }

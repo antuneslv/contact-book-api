@@ -41,6 +41,7 @@ export class AuthController {
           'email should not be empty',
           'email must be an email',
           'password should not be empty',
+          'password must be a string',
         ],
         error: 'Bad Request',
       },

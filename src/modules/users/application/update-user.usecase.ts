@@ -45,7 +45,7 @@ export class UpdateUserUseCase {
       )
 
       if (userWithSameEmail && userWithSameEmail.email !== user.email) {
-        return left(new ConflictException('E-mail already used'))
+        return left(new ConflictException('E-mail already taken'))
       }
     }
 
