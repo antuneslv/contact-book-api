@@ -10,7 +10,7 @@ import { Request } from 'express'
 import { TokenPayload, TokenService } from '@/crypto/token.service'
 import { IS_PUBLIC_KEY } from '@/decorators/public.decorator'
 
-type AuthenticatedRequest = Request & { user: TokenPayload }
+export type RequestWithUser = Request & { user?: TokenPayload }
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -27,21 +27,17 @@ export class AuthGuard implements CanActivate {
 
     if (isPublic) return true
 
-    const request = context.switchToHttp().getRequest<AuthenticatedRequest>()
+    const request = context.switchToHttp().getRequest<RequestWithUser>()
     const authorization = request.headers.authorization
 
     if (!authorization) {
       throw new UnauthorizedException('Missing authorization header')
     }
 
-    if (!authorization.startsWith('Bearer ')) {
+    const [scheme, token] = authorization.split(/\s+/)
+
+    if (scheme !== 'Bearer' || !token) {
       throw new UnauthorizedException('Invalid authorization format')
-    }
-
-    const token = authorization.slice(7).trim()
-
-    if (!token) {
-      throw new UnauthorizedException('Missing token')
     }
 
     const payload = this.tokenService.verify(token)

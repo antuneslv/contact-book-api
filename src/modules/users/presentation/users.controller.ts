@@ -98,12 +98,7 @@ export class UsersController {
     schema: {
       example: {
         statusCode: 401,
-        message: [
-          'Missing authorization header',
-          'Invalid authorization format',
-          'Missing token',
-          'Invalid token',
-        ],
+        message: 'Invalid token',
         error: 'Unauthorized',
       },
     },
@@ -127,8 +122,8 @@ export class UsersController {
       },
     },
   })
-  async get(@CurrentUser() payload: TokenPayload): Promise<UserResponse> {
-    const result = await this.getUserUseCase.execute(payload.sub)
+  async get(@CurrentUser() user: TokenPayload): Promise<UserResponse> {
+    const result = await this.getUserUseCase.execute(user.sub)
 
     if (result.isLeft()) {
       throw result.value

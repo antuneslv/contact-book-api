@@ -1,15 +1,22 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common'
+import {
+  createParamDecorator,
+  ExecutionContext,
+  InternalServerErrorException,
+} from '@nestjs/common'
 
-import { TokenPayload } from '../crypto/token.service'
-
-type RequestWithUser = {
-  user?: TokenPayload
-}
+import { TokenPayload } from '@/crypto/token.service'
+import { RequestWithUser } from '@/guards/auth.guard'
 
 export const CurrentUser = createParamDecorator(
-  (_data: unknown, context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest<RequestWithUser>()
+  (_data: unknown, context: ExecutionContext): TokenPayload => {
+    const { user } = context.switchToHttp().getRequest<RequestWithUser>()
 
-    return request.user
+    if (!user) {
+      throw new InternalServerErrorException(
+        '@CurrentUser requires a route protected by AuthGuard',
+      )
+    }
+
+    return user
   },
 )
