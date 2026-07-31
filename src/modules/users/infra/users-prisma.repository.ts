@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common'
 
 import { PrismaService } from '@/database/prisma.service'
 
-import { CreateUser, User, UsersRepository } from '../domain/users.repository'
+import {
+  CreateUser,
+  UpdateUserData,
+  User,
+  UsersRepository,
+} from '../domain/users.repository'
 
 @Injectable()
 export class UsersPrismaRepository implements UsersRepository {
@@ -31,6 +36,28 @@ export class UsersPrismaRepository implements UsersRepository {
         email,
         password,
       },
+    })
+  }
+
+  async updateUser(id: string, data: UpdateUserData): Promise<User> {
+    return this.prismaService.user.update({
+      where: { id },
+      data,
+    })
+  }
+
+  async updateUserPassword(id: string, password: string): Promise<User> {
+    return this.prismaService.user.update({
+      where: { id },
+      data: {
+        password,
+      },
+    })
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await this.prismaService.user.delete({
+      where: { id },
     })
   }
 }

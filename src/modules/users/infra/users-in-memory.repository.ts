@@ -1,6 +1,11 @@
 import { randomUUID } from 'node:crypto'
 
-import { CreateUser, User, UsersRepository } from '../domain/users.repository'
+import {
+  CreateUser,
+  UpdateUserData,
+  User,
+  UsersRepository,
+} from '../domain/users.repository'
 
 export class UsersInMemoryRepository implements UsersRepository {
   public users: User[] = []
@@ -28,5 +33,53 @@ export class UsersInMemoryRepository implements UsersRepository {
     this.users.push(createdUser)
 
     return Promise.resolve(createdUser)
+  }
+
+  updateUser(id: string, data: UpdateUserData): Promise<User> {
+    const userIndex = this.users.findIndex(user => user.id === id)
+
+    if (userIndex === -1) {
+      throw new Error('User not found.')
+    }
+
+    const updatedUser = {
+      ...this.users[userIndex],
+      ...data,
+      updatedAt: new Date(),
+    }
+
+    this.users[userIndex] = updatedUser
+
+    return Promise.resolve(updatedUser)
+  }
+
+  updateUserPassword(id: string, password: string): Promise<User> {
+    const userIndex = this.users.findIndex(user => user.id === id)
+
+    if (userIndex === -1) {
+      throw new Error('User not found.')
+    }
+
+    const updatedUser = {
+      ...this.users[userIndex],
+      password,
+      updatedAt: new Date(),
+    }
+
+    this.users[userIndex] = updatedUser
+
+    return Promise.resolve(updatedUser)
+  }
+
+  deleteUser(id: string): Promise<void> {
+    const userIndex = this.users.findIndex(user => user.id === id)
+
+    if (userIndex === -1) {
+      throw new Error('User not found.')
+    }
+
+    this.users.splice(userIndex, 1)
+
+    return Promise.resolve()
   }
 }
