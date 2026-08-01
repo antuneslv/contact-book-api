@@ -2,10 +2,10 @@ import { randomUUID } from 'node:crypto'
 
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 
-import { FakeHashService } from '@/crypto/fake-hash.service'
+import { FakeHashService } from '@test/crypto/fake-hash.service'
+import { UsersInMemoryRepository } from '@test/repositories/users-in-memory.repository'
 
 import { UpdateUserPasswordUseCase } from './update-user-password.usecase'
-import { UsersInMemoryRepository } from '../infra/users-in-memory.repository'
 
 let usersRepository: UsersInMemoryRepository
 let hashService: FakeHashService

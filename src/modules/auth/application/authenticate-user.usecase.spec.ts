@@ -1,8 +1,8 @@
 import { UnauthorizedException } from '@nestjs/common'
 
-import { FakeHashService } from '@/crypto/fake-hash.service'
-import { FakeTokenService } from '@/crypto/fake-token.service'
-import { UsersInMemoryRepository } from '@/modules/users/infra/users-in-memory.repository'
+import { FakeHashService } from '@test/crypto/fake-hash.service'
+import { FakeTokenService } from '@test/crypto/fake-token.service'
+import { UsersInMemoryRepository } from '@test/repositories/users-in-memory.repository'
 
 import { AuthenticateUserUseCase } from './authenticate-user.usecase'
 

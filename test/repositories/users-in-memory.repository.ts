@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto'
 
+import { User } from '@/generated/prisma/client'
 import {
   CreateUser,
   UpdateUserData,
-  User,
   UsersRepository,
-} from '../domain/users.repository'
+} from '@/modules/users/domain/users.repository'
 
 export class UsersInMemoryRepository implements UsersRepository {
   public users: User[] = []

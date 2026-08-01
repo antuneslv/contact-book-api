@@ -1,4 +1,4 @@
-import { HashService } from './hash.service'
+import { HashService } from '@/crypto/hash.service'
 
 export class FakeHashService implements HashService {
   hash(value: string): Promise<string> {

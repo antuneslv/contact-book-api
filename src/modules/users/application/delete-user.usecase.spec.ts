@@ -2,8 +2,9 @@ import { randomUUID } from 'node:crypto'
 
 import { NotFoundException } from '@nestjs/common'
 
+import { UsersInMemoryRepository } from '@test/repositories/users-in-memory.repository'
+
 import { DeleteUserUseCase } from './delete-user.usecase'
-import { UsersInMemoryRepository } from '../infra/users-in-memory.repository'
 
 let usersRepository: UsersInMemoryRepository
 let sut: DeleteUserUseCase

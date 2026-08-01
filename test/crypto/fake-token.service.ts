@@ -1,4 +1,4 @@
-import { TokenPayload, TokenService } from './token.service'
+import { TokenPayload, TokenService } from '@/crypto/token.service'
 
 export class FakeTokenService implements TokenService {
   private static readonly PREFIX = 'token-'

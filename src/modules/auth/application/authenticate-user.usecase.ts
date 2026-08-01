@@ -35,12 +35,12 @@ export class AuthenticateUserUseCase {
       return left(new UnauthorizedException('Invalid credentials'))
     }
 
-    const isValidPassword = await this.hashService.compare(
+    const isPasswordValid = await this.hashService.compare(
       password,
       user.password,
     )
 
-    if (!isValidPassword) {
+    if (!isPasswordValid) {
       return left(new UnauthorizedException('Invalid credentials'))
     }
 
