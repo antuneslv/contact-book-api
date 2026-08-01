@@ -7,24 +7,10 @@ export default defineConfig({
   test: {
     globals: true,
     root: './',
-    include: ['src/**/*.spec.ts'],
+    include: ['**/*.e2e-spec.ts'],
+    setupFiles: ['./test/setup-e2e.ts'],
     clearMocks: true,
-    coverage: {
-      provider: 'v8',
-      reportsDirectory: 'coverage',
-      include: ['src/**/*.ts'],
-      exclude: [
-        'src/**/*.spec.ts',
-        'src/**/module.ts',
-        'src/main.ts',
-        'src/config/**',
-        'src/database/**',
-        'src/env/**',
-        'src/generated/**',
-        'src/modules/**/infra/**',
-        'src/modules/**/presentation/**',
-      ],
-    },
+    hookTimeout: 30_000,
   },
   plugins: [
     swc.vite({
@@ -32,6 +18,7 @@ export default defineConfig({
       jsc: {
         parser: { syntax: 'typescript', decorators: true },
         target: 'es2024',
+        keepClassNames: true,
         transform: { legacyDecorator: true, decoratorMetadata: true },
       },
       sourceMaps: true,

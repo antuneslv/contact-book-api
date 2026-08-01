@@ -11,7 +11,7 @@ const schemaId = randomUUID()
 
 function generateUniqueDatabaseURL(schemaId: string) {
   if (!process.env.DATABASE_URL) {
-    throw new Error('Please provider a DATABASE_URL environment variable')
+    throw new Error('DATABASE_URL environment variable is required')
   }
 
   const url = new URL(process.env.DATABASE_URL)

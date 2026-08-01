@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
 
-import { User } from '@/generated/prisma/client'
 import {
   CreateUser,
   UpdateUserData,
+  User,
   UsersRepository,
 } from '@/modules/users/domain/users.repository'
 
