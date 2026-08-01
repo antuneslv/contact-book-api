@@ -70,7 +70,7 @@ describe('UpdateUserPasswordUseCase', () => {
     expect(isPasswordCorrectlyHashed).toBe(true)
   })
 
-  it('should return not found when the user not exist', async () => {
+  it('should return not found when the user does not exist', async () => {
     const hashedPassword = await hashService.hash('123456')
 
     usersRepository.users.push({
@@ -91,7 +91,7 @@ describe('UpdateUserPasswordUseCase', () => {
     expect(result.value).toBeInstanceOf(NotFoundException)
   })
 
-  it('should not allow update same password', async () => {
+  it('should not allow the new password to be the same as the current one', async () => {
     const hashedPassword = await hashService.hash('123456')
 
     usersRepository.users.push({

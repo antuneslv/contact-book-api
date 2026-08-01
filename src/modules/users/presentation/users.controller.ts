@@ -13,7 +13,6 @@ import {
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
@@ -21,6 +20,7 @@ import {
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger'
 
 import { type TokenPayload } from '@/crypto/token.service'
@@ -160,7 +160,7 @@ export class UsersController {
   @ApiOperation({
     summary: "Update user's name or e-mail",
     description:
-      'Partial update. Omitted field keep their current value. The e-mail must not be in use by another account.',
+      'Partial update. Omitted fields keep their current value. The e-mail must not be in use by another account.',
   })
   @ApiOkResponse({
     description: 'The user has been successfully updated.',
@@ -255,16 +255,6 @@ export class UsersController {
       },
     },
   })
-  @ApiForbiddenResponse({
-    description: 'The current password was not provided correctly.',
-    schema: {
-      example: {
-        statusCode: 403,
-        message: 'Invalid current password',
-        error: 'Forbidden',
-      },
-    },
-  })
   @ApiNotFoundResponse({
     description: 'The requested user was not found.',
     schema: {
@@ -272,6 +262,17 @@ export class UsersController {
         statusCode: 404,
         message: 'User not found',
         error: 'Not Found',
+      },
+    },
+  })
+  @ApiUnprocessableEntityResponse({
+    description:
+      'The current password is incorrect, or the new password is the same as the current one.',
+    schema: {
+      example: {
+        statusCode: 422,
+        message: 'Invalid current password',
+        error: 'Unprocessable Entity',
       },
     },
   })
@@ -299,8 +300,9 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'Delete User',
-    description: "Delete User's account.",
+    summary: "Delete user's account",
+    description:
+      "Delete the user's account. This action cannot be undone. All of the user's data, including associated contacts, will be permanently deleted.",
   })
   @ApiNoContentResponse({
     description: "The user's account has been successfully deleted.",

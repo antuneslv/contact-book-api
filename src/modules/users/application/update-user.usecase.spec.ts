@@ -120,10 +120,10 @@ describe('UpdateUserUseCase', () => {
 
     if (result.isLeft()) return
 
-    expect(result.value.email).not.toBeUndefined()
+    expect(result.value.email).toBe('johndoe@example.com')
   })
 
-  it('should return not found when the user not exist', async () => {
+  it('should return not found when the user does not exist', async () => {
     usersRepository.users.push({
       id: USER_ID,
       name: 'John Doe',
