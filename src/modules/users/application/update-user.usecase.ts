@@ -39,12 +39,12 @@ export class UpdateUserUseCase {
       return left(new NotFoundException('User not found'))
     }
 
-    if (data?.email) {
+    if (data.email) {
       const userWithSameEmail = await this.usersRepository.findUserByEmail(
         data.email,
       )
 
-      if (userWithSameEmail && userWithSameEmail.email !== user.email) {
+      if (userWithSameEmail && userWithSameEmail.id !== user.id) {
         return left(new ConflictException('E-mail already taken'))
       }
     }

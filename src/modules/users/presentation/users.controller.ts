@@ -106,7 +106,7 @@ export class UsersController {
     return result.value
   }
 
-  @Get('/me')
+  @Get('me')
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Get user',
@@ -155,11 +155,12 @@ export class UsersController {
     return result.value
   }
 
-  @Patch('/me')
+  @Patch('me')
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: "Update user's name or e-mail",
-    description: "Update user's name or e-mail.",
+    description:
+      'Partial update. Omitted field keep their current value. The e-mail must not be in use by another account.',
   })
   @ApiOkResponse({
     description: 'The user has been successfully updated.',
@@ -217,12 +218,13 @@ export class UsersController {
     return result.value
   }
 
-  @Patch('/me/password')
+  @Patch('me/password')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: "Update user's password",
-    description: "Update user's password.",
+    description:
+      "Update user's password. Minimum 6 characters. Cannot be the same as the current password.",
   })
   @ApiNoContentResponse({
     description: "The user's password has been successfully updated.",
@@ -293,12 +295,12 @@ export class UsersController {
     }
   }
 
-  @Delete('/me')
+  @Delete('me')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: "Delete User's Account",
-    description: "Delete User's Account.",
+    summary: 'Delete User',
+    description: "Delete User's account.",
   })
   @ApiNoContentResponse({
     description: "The user's account has been successfully deleted.",

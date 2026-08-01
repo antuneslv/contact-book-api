@@ -36,7 +36,7 @@ describe('DeleteUserUseCase', () => {
     expect(result.value).toBeNull()
   })
 
-  it("should not be able to delete another's user account", async () => {
+  it('should return not found when the user not exist', async () => {
     usersRepository.users.push({
       id: USER_ID,
       name: 'John Doe',

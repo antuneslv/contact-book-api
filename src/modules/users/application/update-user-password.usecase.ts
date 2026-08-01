@@ -1,7 +1,7 @@
 import {
-  ForbiddenException,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common'
 
 import { HashService } from '@/crypto/hash.service'
@@ -15,7 +15,7 @@ type UpdateUserPasswordInput = {
 }
 
 type UpdateUserPasswordUseCaseResponse = Either<
-  NotFoundException | ForbiddenException,
+  NotFoundException | UnprocessableEntityException,
   null
 >
 
@@ -30,19 +30,27 @@ export class UpdateUserPasswordUseCase {
     userId: string,
     { currentPassword, newPassword }: UpdateUserPasswordInput,
   ): Promise<UpdateUserPasswordUseCaseResponse> {
+    if (currentPassword === newPassword) {
+      return left(
+        new UnprocessableEntityException(
+          'New password must be different from the current one',
+        ),
+      )
+    }
+
     const user = await this.usersRepository.findUserById(userId)
 
     if (!user) {
       return left(new NotFoundException('User not found'))
     }
 
-    const doesPasswordsMatches = await this.hashService.compare(
+    const isCurrentPasswordValid = await this.hashService.compare(
       currentPassword,
       user.password,
     )
 
-    if (!doesPasswordsMatches) {
-      return left(new ForbiddenException('Invalid current password'))
+    if (!isCurrentPasswordValid) {
+      return left(new UnprocessableEntityException('Invalid current password'))
     }
 
     const hashedPassword = await this.hashService.hash(newPassword)

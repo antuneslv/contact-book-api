@@ -26,7 +26,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Authenticate a user',
-    description: 'Authenticates a user with the provided email and password.',
+    description: 'Authenticates a user with the provided e-mail and password.',
   })
   @ApiOkResponse({
     description: 'The user has been successfully authenticated.',

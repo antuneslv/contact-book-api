@@ -39,12 +39,16 @@ export class UsersInMemoryRepository implements UsersRepository {
     const userIndex = this.users.findIndex(user => user.id === id)
 
     if (userIndex === -1) {
-      throw new Error('User not found.')
+      throw new Error('User not found')
     }
+
+    const definedData = Object.fromEntries(
+      Object.entries(data).filter(([, value]) => value !== undefined),
+    )
 
     const updatedUser = {
       ...this.users[userIndex],
-      ...data,
+      ...definedData,
       updatedAt: new Date(),
     }
 

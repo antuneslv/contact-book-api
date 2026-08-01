@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
-import { ForbiddenException, NotFoundException } from '@nestjs/common'
+import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 
 import { FakeHashService } from '@/crypto/fake-hash.service'
 
@@ -70,7 +70,7 @@ describe('UpdateUserPasswordUseCase', () => {
     expect(isPasswordCorrectlyHashed).toBe(true)
   })
 
-  it("should not be able to update another's user password", async () => {
+  it('should return not found when the user not exist', async () => {
     const hashedPassword = await hashService.hash('123456')
 
     usersRepository.users.push({
@@ -91,7 +91,28 @@ describe('UpdateUserPasswordUseCase', () => {
     expect(result.value).toBeInstanceOf(NotFoundException)
   })
 
-  it('should not be able to update user password if current password if incorrectly', async () => {
+  it('should not allow update same password', async () => {
+    const hashedPassword = await hashService.hash('123456')
+
+    usersRepository.users.push({
+      id: USER_ID,
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    const result = await sut.execute(USER_ID, {
+      currentPassword: '123456',
+      newPassword: '123456',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(UnprocessableEntityException)
+  })
+
+  it('should not update the password when the current password is incorrect', async () => {
     const hashedPassword = await hashService.hash('123456')
 
     usersRepository.users.push({
@@ -109,6 +130,6 @@ describe('UpdateUserPasswordUseCase', () => {
     })
 
     expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(ForbiddenException)
+    expect(result.value).toBeInstanceOf(UnprocessableEntityException)
   })
 })
