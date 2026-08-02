@@ -105,7 +105,6 @@ describe('Users (E2E)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'John Doe Jr.',
-        email: undefined,
       })
 
     expect(response.statusCode).toBe(200)

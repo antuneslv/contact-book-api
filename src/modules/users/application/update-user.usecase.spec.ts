@@ -28,19 +28,23 @@ describe('UpdateUserUseCase', () => {
 
     if (result.isLeft()) return
 
-    expect(usersRepository.users[0].name).toEqual(result.value.name)
+    expect(result.value.name).toBe('John Doe Jr.')
+    expect(usersRepository.users[0].name).toBe('John Doe Jr.')
   })
 
   it('should update user e-mail', async () => {
     usersRepository.users.push(makeUser({ id: USER_ID }))
 
-    const result = await sut.execute(USER_ID, { email: 'john.doe2@example.com' })
+    const result = await sut.execute(USER_ID, {
+      email: 'john.doe2@example.com',
+    })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isLeft()) return
 
-    expect(usersRepository.users[0].email).toEqual(result.value.email)
+    expect(result.value.email).toBe('john.doe2@example.com')
+    expect(usersRepository.users[0].email).toBe('john.doe2@example.com')
   })
 
   it('should update user name and e-mail', async () => {
@@ -55,28 +59,34 @@ describe('UpdateUserUseCase', () => {
 
     if (result.isLeft()) return
 
-    expect(usersRepository.users[0].name).toEqual(result.value.name)
-    expect(usersRepository.users[0].email).toEqual(result.value.email)
+    expect(result.value.name).toBe('John Doe Jr.')
+    expect(result.value.email).toBe('john.doe2@example.com')
+    expect(usersRepository.users[0].name).toBe('John Doe Jr.')
+    expect(usersRepository.users[0].email).toBe('john.doe2@example.com')
   })
 
   it("should allow updating while keeping the user's own e-mail", async () => {
-    usersRepository.users.push(makeUser({ id: USER_ID }))
+    const user = makeUser({ id: USER_ID })
+
+    usersRepository.users.push(user)
 
     const result = await sut.execute(USER_ID, {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
+      name: 'John Doe Jr.',
+      email: user.email,
     })
 
     expect(result.isRight()).toBe(true)
 
     if (result.isLeft()) return
 
-    expect(usersRepository.users[0].name).toEqual(result.value.name)
-    expect(usersRepository.users[0].email).toEqual(result.value.email)
+    expect(result.value.name).toEqual('John Doe Jr.')
+    expect(result.value.email).toEqual(user.email)
   })
 
   it('should not overwrite a key when an explicit undefined value is passed', async () => {
-    usersRepository.users.push(makeUser({ id: USER_ID }))
+    const user = makeUser({ id: USER_ID })
+
+    usersRepository.users.push(user)
 
     const result = await sut.execute(USER_ID, {
       name: 'John Doe Jr.',
@@ -87,7 +97,8 @@ describe('UpdateUserUseCase', () => {
 
     if (result.isLeft()) return
 
-    expect(result.value.email).toEqual(expect.any(String))
+    expect(result.value.name).toBe('John Doe Jr.')
+    expect(result.value.email).toBe(user.email)
   })
 
   it('should return not found when the user does not exist', async () => {
