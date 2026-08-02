@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 
 import { FakeHashService } from '@test/crypto/fake-hash.service'
+import { makeUser } from '@test/factories/user.factory'
 import { UsersInMemoryRepository } from '@test/repositories/users-in-memory.repository'
 
 import { UpdateUserPasswordUseCase } from './update-user-password.usecase'
@@ -24,14 +25,9 @@ describe('UpdateUserPasswordUseCase', () => {
   it('should update user password', async () => {
     const hashedPassword = await hashService.hash('123456')
 
-    usersRepository.users.push({
-      id: USER_ID,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    usersRepository.users.push(
+      makeUser({ id: USER_ID, password: hashedPassword }),
+    )
 
     const result = await sut.execute(USER_ID, {
       currentPassword: '123456',
@@ -48,14 +44,9 @@ describe('UpdateUserPasswordUseCase', () => {
   it('should hash user password upon update', async () => {
     const hashedPassword = await hashService.hash('123456')
 
-    usersRepository.users.push({
-      id: USER_ID,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    usersRepository.users.push(
+      makeUser({ id: USER_ID, password: hashedPassword }),
+    )
 
     await sut.execute(USER_ID, {
       currentPassword: '123456',
@@ -73,14 +64,9 @@ describe('UpdateUserPasswordUseCase', () => {
   it('should return not found when the user does not exist', async () => {
     const hashedPassword = await hashService.hash('123456')
 
-    usersRepository.users.push({
-      id: USER_ID,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    usersRepository.users.push(
+      makeUser({ id: USER_ID, password: hashedPassword }),
+    )
 
     const result = await sut.execute(ANOTHER_USER_ID, {
       currentPassword: '123456',
@@ -94,14 +80,9 @@ describe('UpdateUserPasswordUseCase', () => {
   it('should not allow the new password to be the same as the current one', async () => {
     const hashedPassword = await hashService.hash('123456')
 
-    usersRepository.users.push({
-      id: USER_ID,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    usersRepository.users.push(
+      makeUser({ id: USER_ID, password: hashedPassword }),
+    )
 
     const result = await sut.execute(USER_ID, {
       currentPassword: '123456',
@@ -115,14 +96,9 @@ describe('UpdateUserPasswordUseCase', () => {
   it('should not update the password when the current password is incorrect', async () => {
     const hashedPassword = await hashService.hash('123456')
 
-    usersRepository.users.push({
-      id: USER_ID,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    usersRepository.users.push(
+      makeUser({ id: USER_ID, password: hashedPassword }),
+    )
 
     const result = await sut.execute(USER_ID, {
       currentPassword: '654321',

@@ -6,9 +6,11 @@ import request from 'supertest'
 
 import { AppModule } from '@/app.module'
 import { setupApp } from '@/config/app'
+import { CryptoModule } from '@/crypto/crypto.module'
 import { HashService } from '@/crypto/hash.service'
 import { TokenService } from '@/crypto/token.service'
 import { PrismaService } from '@/database/prisma.service'
+import { UserFactory } from '@test/factories/user.factory'
 
 import { UserResponse } from './dtos/user.response'
 
@@ -26,12 +28,12 @@ describe('Users (E2E)', () => {
   let prismaService: PrismaService
   let tokenService: TokenService
   let hashService: HashService
-
-  let user: SerializedUserResponse
+  let userFactory: UserFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, CryptoModule],
+      providers: [UserFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -41,6 +43,7 @@ describe('Users (E2E)', () => {
     prismaService = moduleRef.get(PrismaService)
     tokenService = moduleRef.get(TokenService)
     hashService = moduleRef.get(HashService)
+    userFactory = moduleRef.get(UserFactory)
 
     await app.init()
   })
@@ -64,11 +67,9 @@ describe('Users (E2E)', () => {
       email: 'john.doe@example.com',
     })
 
-    user = response.body
-
     const userOnDatabase = await prismaService.user.findUnique({
       where: {
-        id: user.id,
+        id: response.body.id,
       },
     })
 
@@ -77,6 +78,8 @@ describe('Users (E2E)', () => {
   })
 
   test('[GET] /api/users/me', async () => {
+    const { user } = await userFactory.makePrismaUser()
+
     const accessToken = tokenService.generate({ sub: user.id })
 
     const response = await request(app.getHttpServer())
@@ -84,28 +87,33 @@ describe('Users (E2E)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
 
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual(user)
+    expect(response.body).toEqual({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt.toISOString(),
+    })
   })
 
   test('[PATCH] /api/users/me', async () => {
+    const { user } = await userFactory.makePrismaUser()
+
     const accessToken = tokenService.generate({ sub: user.id })
 
-    const response: UserHttpResponse = await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .patch('/api/users/me')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'John Doe Jr.',
-        email: 'john.doe.jr@example.com',
+        email: undefined,
       })
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toMatchObject({
       id: user.id,
       name: 'John Doe Jr.',
-      email: 'john.doe.jr@example.com',
+      email: user.email,
     })
-
-    user = response.body
 
     const userOnDatabase = await prismaService.user.findUnique({
       where: {
@@ -114,17 +122,19 @@ describe('Users (E2E)', () => {
     })
 
     expect(userOnDatabase?.name).toBe('John Doe Jr.')
-    expect(userOnDatabase?.email).toBe('john.doe.jr@example.com')
+    expect(userOnDatabase?.email).toBe(user.email)
   })
 
   test('[PATCH] /api/users/me/password', async () => {
+    const { user, password } = await userFactory.makePrismaUser()
+
     const accessToken = tokenService.generate({ sub: user.id })
 
     const response = await request(app.getHttpServer())
       .patch('/api/users/me/password')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        currentPassword: '123456',
+        currentPassword: password,
         newPassword: '654321',
       })
 
@@ -147,6 +157,8 @@ describe('Users (E2E)', () => {
   })
 
   test('[DELETE] /api/users/me', async () => {
+    const { user } = await userFactory.makePrismaUser()
+
     const accessToken = tokenService.generate({ sub: user.id })
 
     const response = await request(app.getHttpServer())

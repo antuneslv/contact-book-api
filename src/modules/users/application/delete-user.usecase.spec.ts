@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import { NotFoundException } from '@nestjs/common'
 
+import { makeUser } from '@test/factories/user.factory'
 import { UsersInMemoryRepository } from '@test/repositories/users-in-memory.repository'
 
 import { DeleteUserUseCase } from './delete-user.usecase'
@@ -19,14 +20,7 @@ describe('DeleteUserUseCase', () => {
   })
 
   it('should delete user account', async () => {
-    usersRepository.users.push({
-      id: USER_ID,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: 'any-hash',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    usersRepository.users.push(makeUser({ id: USER_ID }))
 
     const result = await sut.execute(USER_ID)
 
@@ -38,14 +32,7 @@ describe('DeleteUserUseCase', () => {
   })
 
   it('should return not found when the user does not exist', async () => {
-    usersRepository.users.push({
-      id: USER_ID,
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: 'any-hash',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
+    usersRepository.users.push(makeUser({ id: USER_ID }))
 
     const result = await sut.execute(ANOTHER_USER_ID)
 

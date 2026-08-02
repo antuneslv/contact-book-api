@@ -12,8 +12,16 @@ let tokenService: FakeTokenService
 let sut: AuthenticateUserUseCase
 
 const USER_CREDENTIALS = {
-  email: 'johndoe@example.com',
+  email: 'john.doe@example.com',
   password: '123456',
+}
+
+async function createUser(password: string) {
+  return usersRepository.createUser({
+    name: 'John Doe',
+    email: USER_CREDENTIALS.email,
+    password,
+  })
 }
 
 describe('AuthenticateUserUseCase', () => {
@@ -31,11 +39,7 @@ describe('AuthenticateUserUseCase', () => {
   it('should authenticate a user', async () => {
     const password = await hashService.hash('123456')
 
-    const user = await usersRepository.createUser({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password,
-    })
+    const user = await createUser(password)
 
     const result = await sut.execute(USER_CREDENTIALS)
 
@@ -49,11 +53,7 @@ describe('AuthenticateUserUseCase', () => {
   it('should return a generic unauthorized error when authenticating with an invalid password', async () => {
     const password = await hashService.hash('abcdef')
 
-    await usersRepository.createUser({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password,
-    })
+    await createUser(password)
 
     const result = await sut.execute(USER_CREDENTIALS)
 
@@ -64,11 +64,7 @@ describe('AuthenticateUserUseCase', () => {
   it('should return a generic unauthorized error when authenticating with an invalid email', async () => {
     const password = await hashService.hash('123456')
 
-    await usersRepository.createUser({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password,
-    })
+    await createUser(password)
 
     const result = await sut.execute({
       email: 'another.email@example.com',

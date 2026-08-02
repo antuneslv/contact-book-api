@@ -8,7 +8,7 @@ import {
 } from '@/modules/users/domain/users.repository'
 
 export class UsersInMemoryRepository implements UsersRepository {
-  public users: User[] = []
+  users: User[] = []
 
   findUserById(id: string): Promise<User | null> {
     return Promise.resolve(this.users.find(user => user.id === id) ?? null)
@@ -61,7 +61,7 @@ export class UsersInMemoryRepository implements UsersRepository {
     const userIndex = this.users.findIndex(user => user.id === id)
 
     if (userIndex === -1) {
-      throw new Error('User not found.')
+      throw new Error('User not found')
     }
 
     const updatedUser = {
@@ -79,7 +79,7 @@ export class UsersInMemoryRepository implements UsersRepository {
     const userIndex = this.users.findIndex(user => user.id === id)
 
     if (userIndex === -1) {
-      throw new Error('User not found.')
+      throw new Error('User not found')
     }
 
     this.users.splice(userIndex, 1)

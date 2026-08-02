@@ -11,7 +11,7 @@ let sut: CreateUserUseCase
 
 const CREATE_USER_REQUEST = {
   name: 'John Doe',
-  email: 'johndoe@example.com',
+  email: 'john.doe@example.com',
   password: '123456',
 }
 
