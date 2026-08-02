@@ -21,13 +21,15 @@ export class UsersInMemoryRepository implements UsersRepository {
   }
 
   createUser(user: CreateUser): Promise<User> {
+    const date = new Date()
+
     const createdUser = {
       id: randomUUID(),
       name: user.name,
       email: user.email,
       password: user.password,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: date,
+      updatedAt: date,
     }
 
     this.users.push(createdUser)

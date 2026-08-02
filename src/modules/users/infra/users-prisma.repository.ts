@@ -39,14 +39,14 @@ export class UsersPrismaRepository implements UsersRepository {
     })
   }
 
-  async updateUser(id: string, data: UpdateUserData): Promise<User> {
+  updateUser(id: string, data: UpdateUserData): Promise<User> {
     return this.prismaService.user.update({
       where: { id },
       data,
     })
   }
 
-  async updateUserPassword(id: string, password: string): Promise<User> {
+  updateUserPassword(id: string, password: string): Promise<User> {
     return this.prismaService.user.update({
       where: { id },
       data: {

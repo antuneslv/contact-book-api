@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 
-import { Either, left, right } from '@/utils/either/either'
+import { Either, left, right } from '@/utils/either'
 
 import { UsersRepository } from '../domain/users.repository'
 

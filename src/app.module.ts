@@ -5,6 +5,7 @@ import { PrismaModule } from './database/prisma.module'
 import { EnvModule } from './env/env.module'
 import { envSchema } from './env/env.schema'
 import { AuthModule } from './modules/auth/auth.module'
+import { ContactsModule } from './modules/contacts/contacts.module'
 import { UsersModule } from './modules/users/users.module'
 
 @Module({
@@ -17,6 +18,7 @@ import { UsersModule } from './modules/users/users.module'
     EnvModule,
     PrismaModule,
     UsersModule,
+    ContactsModule,
   ],
 })
 export class AppModule {}

@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator'
 
 export class CreateUserRequest {
   @ApiProperty({
-    description: "The user's name",
+    description: "The user's name.",
     example: 'John Doe',
   })
   @IsString()
@@ -11,7 +11,7 @@ export class CreateUserRequest {
   name: string
 
   @ApiProperty({
-    description: "The user's email",
+    description: "The user's email.",
     example: 'john.doe@example.com',
   })
   @IsEmail()
@@ -19,7 +19,7 @@ export class CreateUserRequest {
   email: string
 
   @ApiProperty({
-    description: "The user's password, minimum 6 characters",
+    description: "The user's password, minimum 6 characters.",
     example: 'SecurePassword123',
   })
   @IsString()

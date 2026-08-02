@@ -5,7 +5,7 @@ import { IsOptionalButNotNull } from '@/decorators/is-optional-but-not-null.deco
 
 export class UpdateUserRequest {
   @ApiProperty({
-    description: "The user's name",
+    description: "The user's name.",
     example: 'John Doe',
     required: false,
   })
@@ -15,7 +15,7 @@ export class UpdateUserRequest {
   name?: string
 
   @ApiProperty({
-    description: "The user's email",
+    description: "The user's email.",
     example: 'john.doe@example.com',
     required: false,
   })

@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
 
 export class AuthenticateUserRequest {
   @ApiProperty({
-    description: "The user's e-mail",
+    description: "The user's e-mail.",
     example: 'john.doe@example.com',
   })
   @IsEmail()
@@ -11,7 +11,7 @@ export class AuthenticateUserRequest {
   email: string
 
   @ApiProperty({
-    description: "The user's password",
+    description: "The user's password.",
     example: 'SecurePassword123',
   })
   @IsString()

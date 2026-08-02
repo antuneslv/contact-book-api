@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 
 import { HashService } from '@/crypto/hash.service'
-import { Either, left, right } from '@/utils/either/either'
+import { Either, left, right } from '@/utils/either'
 
 import { UsersRepository } from '../domain/users.repository'
 

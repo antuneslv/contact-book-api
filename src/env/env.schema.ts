@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { isDuration } from '@/utils/duration/duration'
+import { isDuration } from '@/utils/duration'
 
 export const envSchema = z.object({
   DATABASE_URL: z.url(),

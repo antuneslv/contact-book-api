@@ -1,4 +1,4 @@
-import { Duration, isDuration } from '@/utils/duration/duration'
+import { Duration, isDuration } from './duration'
 
 describe('isDuration', () => {
   it.each(['1s', '30s', '15m', '2h', '7d', '999d'])(
