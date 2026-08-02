@@ -5,12 +5,13 @@ import { PrismaService } from '@/database/prisma.service'
 import {
   Contact,
   ContactsRepository,
-  CreateOrUpdateContact,
+  ContactData,
 } from '../domain/contacts.repository'
 
 @Injectable()
 export class ContactsPrismaRepository implements ContactsRepository {
   constructor(private readonly prismaService: PrismaService) {}
+
   findContactByIdAndUserId(
     id: string,
     userId: string,
@@ -31,7 +32,7 @@ export class ContactsPrismaRepository implements ContactsRepository {
     })
   }
 
-  createContact(userId: string, data: CreateOrUpdateContact): Promise<Contact> {
+  createContact(userId: string, data: ContactData): Promise<Contact> {
     return this.prismaService.contact.create({
       data: {
         ...data,
@@ -43,7 +44,7 @@ export class ContactsPrismaRepository implements ContactsRepository {
   updateContact(
     id: string,
     userId: string,
-    data: CreateOrUpdateContact,
+    data: ContactData,
   ): Promise<Contact> {
     return this.prismaService.contact.update({
       where: {

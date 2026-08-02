@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto'
 
 import {
   Contact,
+  ContactData,
   ContactsRepository,
-  CreateOrUpdateContact,
 } from '@/modules/contacts/domain/contacts.repository'
 
 export class ContactsInMemoryRepository implements ContactsRepository {
@@ -21,18 +21,13 @@ export class ContactsInMemoryRepository implements ContactsRepository {
     throw new Error('Method not implemented.')
   }
 
-  createContact(userId: string, data: CreateOrUpdateContact): Promise<Contact> {
+  createContact(userId: string, data: ContactData): Promise<Contact> {
     const date = new Date()
 
     const contact: Contact = {
       id: randomUUID(),
       userId,
-      name: data.name,
-      phone: data.phone,
-      email: data.email ?? null,
-      birthday: data.birthday ?? null,
-      category: data.category ?? null,
-      observations: data.observations ?? null,
+      ...data,
       createdAt: date,
       updatedAt: date,
     }
@@ -45,7 +40,7 @@ export class ContactsInMemoryRepository implements ContactsRepository {
   updateContact(
     id: string,
     userId: string,
-    data: CreateOrUpdateContact,
+    data: ContactData,
   ): Promise<Contact> {
     throw new Error('Method not implemented.')
   }

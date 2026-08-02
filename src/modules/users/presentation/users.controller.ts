@@ -65,10 +65,12 @@ export class UsersController {
       example: {
         statusCode: 400,
         message: [
+          'name must be shorter than or equal to 100 characters',
           'name should not be empty',
           'name must be a string',
           'email should not be empty',
           'email must be an email',
+          'password must be shorter than or equal to 72 characters',
           'password must be longer than or equal to 6 characters',
           'password should not be empty',
           'password must be a string',
@@ -237,6 +239,7 @@ export class UsersController {
         message: [
           'currentPassword should not be empty',
           'currentPassword must be a string',
+          'newPassword must be shorter than or equal to 72 characters',
           'newPassword must be longer than or equal to 6 characters',
           'newPassword should not be empty',
           'newPassword must be a string',

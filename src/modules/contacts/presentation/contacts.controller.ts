@@ -1,11 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common'
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
 
 import { type TokenPayload } from '@/crypto/token.service'
@@ -21,9 +23,11 @@ export class ContactsController {
   constructor(private readonly createContactUseCase: CreateContactUseCase) {}
 
   @Post()
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Create a new contact',
-    description: 'Creates a new contact with the provided details.',
+    description:
+      'Creates a contact owned by the authenticated user. Optional fields may be omitted or sent as null.',
   })
   @ApiCreatedResponse({
     description: 'The contact has been successfully created.',
@@ -39,18 +43,29 @@ export class ContactsController {
           'name must be a string',
           'phone should not be empty',
           'phone must be a string',
-          'Observations must be at most 255 characters long',
+          'birthday must be a calendar date in YYYY-MM-DD format',
+          'observations must be shorter than or equal to 255 characters',
         ],
         error: 'Bad Request',
       },
     },
   })
+  @ApiUnauthorizedResponse({
+    description: 'Authentication token is missing or invalid.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Invalid token',
+        error: 'Unauthorized',
+      },
+    },
+  })
   @ApiNotFoundResponse({
-    description: 'User with the provided id was not found.',
+    description: 'The authenticated user no longer exists.',
     schema: {
       example: {
         statusCode: 404,
-        message: 'User not found',
+        message: 'User not found.',
         error: 'Not Found',
       },
     },

@@ -1,4 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+
+import {
+  CONTACT_CATEGORIES,
+  type ContactCategory,
+} from '../../domain/contacts.repository'
 
 export class ContactResponse {
   @ApiProperty({
@@ -14,32 +19,34 @@ export class ContactResponse {
   name: string
 
   @ApiProperty({
-    description: "The contact's phone number.",
-    example: '(123) 456-7890',
+    description: "The contact's phone number, exactly as it was provided.",
+    example: '+1 555 000 0000',
   })
   phone: string
 
-  @ApiProperty({
-    description: "The contact's email.",
+  @ApiPropertyOptional({
+    description: "The contact's e-mail. Omitted when empty.",
     example: 'john.doe@example.com',
   })
   email?: string
 
-  @ApiProperty({
-    description: "The contact's birthday (YYYY-MM-DD format).",
+  @ApiPropertyOptional({
+    description:
+      "The contact's birthday, as a calendar date with no time zone. Omitted when empty.",
     example: '1990-01-20',
+    format: 'date',
   })
   birthday?: string
 
-  @ApiProperty({
-    description: "The contact's category.",
+  @ApiPropertyOptional({
+    description: "The contact's category. Omitted when empty.",
     example: 'FAMILY',
-    enum: ['FAMILY', 'FRIENDS', 'WORK', 'SCHOOL'],
+    enum: CONTACT_CATEGORIES,
   })
-  category?: string
+  category?: ContactCategory
 
-  @ApiProperty({
-    description: "The contact's observations.",
+  @ApiPropertyOptional({
+    description: "The contact's observations. Omitted when empty.",
     example: 'John is a great guy!',
   })
   observations?: string
