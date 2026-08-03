@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 
 import { UsersRepository } from '@/modules/users/domain/users.repository'
-import { formatCalendarDate, parseCalendarDate } from '@/utils/calendar-date'
+import { parseCalendarDate } from '@/utils/calendar-date'
 import { Either, left, right } from '@/utils/either'
 
+import { ContactOutput, toContactOutput } from './contact-output'
 import {
   ContactCategory,
   ContactsRepository,
@@ -18,22 +19,7 @@ export type CreateContactInput = {
   observations?: string | null
 }
 
-type CreateContactOutput = {
-  id: string
-  name: string
-  phone: string
-  email: string | null
-  birthday: string | null
-  category: ContactCategory | null
-  observations: string | null
-  createdAt: Date
-  updatedAt: Date
-}
-
-type CreateContactUseCaseResponse = Either<
-  NotFoundException,
-  CreateContactOutput
->
+type CreateContactUseCaseResponse = Either<NotFoundException, ContactOutput>
 
 @Injectable()
 export class CreateContactUseCase {
@@ -61,16 +47,6 @@ export class CreateContactUseCase {
       observations: data.observations ?? null,
     })
 
-    return right({
-      id: contact.id,
-      name: contact.name,
-      phone: contact.phone,
-      email: contact.email,
-      birthday: contact.birthday && formatCalendarDate(contact.birthday),
-      category: contact.category,
-      observations: contact.observations,
-      createdAt: contact.createdAt,
-      updatedAt: contact.updatedAt,
-    })
+    return right(toContactOutput(contact))
   }
 }

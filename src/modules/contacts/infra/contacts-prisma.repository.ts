@@ -26,6 +26,9 @@ export class ContactsPrismaRepository implements ContactsRepository {
       where: {
         userId,
       },
+      orderBy: {
+        name: 'asc',
+      },
     })
   }
 

@@ -4,7 +4,11 @@ import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
 
 import { PrismaService } from '@/database/prisma.service'
-import { Contact } from '@/modules/contacts/domain/contacts.repository'
+import {
+  CONTACT_CATEGORIES,
+  Contact,
+} from '@/modules/contacts/domain/contacts.repository'
+import { parseCalendarDate } from '@/utils/calendar-date'
 
 export function makeContact(override: Partial<Contact> = {}): Contact {
   const now = new Date()
@@ -15,13 +19,10 @@ export function makeContact(override: Partial<Contact> = {}): Contact {
     name: faker.person.fullName(),
     email: faker.internet.email(),
     phone: faker.phone.number(),
-    birthday: faker.date.birthdate(),
-    category: faker.helpers.arrayElement([
-      'FAMILY',
-      'FRIENDS',
-      'WORK',
-      'SCHOOL',
-    ]),
+    birthday: parseCalendarDate(
+      faker.date.birthdate().toISOString().slice(0, 10),
+    ),
+    category: faker.helpers.arrayElement(CONTACT_CATEGORIES),
     observations: faker.lorem.sentences(2),
     createdAt: now,
     updatedAt: now,
@@ -33,11 +34,14 @@ export function makeContact(override: Partial<Contact> = {}): Contact {
 export class ContactFactory {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async makePrismaContact(override: Partial<Contact> = {}) {
-    const contact = makeContact(override)
+  async makePrismaContact(
+    userId: string,
+    override: Partial<Contact> = {},
+  ): Promise<Contact> {
+    const contact = makeContact({ ...override, userId })
 
     await this.prismaService.contact.create({ data: contact })
 
-    return { contact }
+    return contact
   }
 }

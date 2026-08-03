@@ -28,7 +28,9 @@ export class ContactsInMemoryRepository implements ContactsRepository {
 
   fetchContacts(userId: string): Promise<Contact[]> {
     return Promise.resolve(
-      this.contacts.filter(contact => contact.userId === userId),
+      this.contacts
+        .filter(contact => contact.userId === userId)
+        .sort((a, b) => a.name.localeCompare(b.name)),
     )
   }
 

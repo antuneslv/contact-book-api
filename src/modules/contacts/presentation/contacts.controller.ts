@@ -15,10 +15,10 @@ import { type TokenPayload } from '@/crypto/token.service'
 import { CurrentUser } from '@/decorators/current-user.decorator'
 
 import { CreateContactUseCase } from '../application/create-contact.usecase'
-import { ContactResponse } from './dtos/contact.response'
-import { CreateContactRequest } from './dtos/create-contact.request'
 import { FetchContactsUseCase } from '../application/fetch-contacts.usecase'
 import { GetContactUseCase } from '../application/get-contact.usecase'
+import { ContactResponse } from './dtos/contact.response'
+import { CreateContactRequest } from './dtos/create-contact.request'
 import { FetchContactsResponse } from './dtos/fetch-contacts.response'
 
 @ApiTags('Contacts')
@@ -105,11 +105,11 @@ export class ContactsController {
   @ApiOperation({
     summary: 'Fetch contacts',
     description:
-      'Retrieves a contact list owned by the authenticated user based on its ID.',
+      'Retrieves every contact owned by the authenticated user, ordered by name. Returns an empty list when there are none.',
   })
   @ApiOkResponse({
     description: 'The contacts have been successfully retrieved.',
-    type: ContactResponse,
+    type: FetchContactsResponse,
   })
   @ApiUnauthorizedResponse({
     description: 'Authentication token is missing or invalid.',
@@ -133,13 +133,7 @@ export class ContactsController {
   async fetchContacts(
     @CurrentUser() user: TokenPayload,
   ): Promise<FetchContactsResponse> {
-    const result = await this.fetchContactsUseCase.execute(user.sub)
-
-    if (result.isLeft()) {
-      throw result.value
-    }
-
-    return result.value
+    return this.fetchContactsUseCase.execute(user.sub)
   }
 
   @Get(':id')
@@ -160,6 +154,17 @@ export class ContactsController {
         statusCode: 401,
         message: 'Invalid token',
         error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description:
+      'No contact with the provided ID belongs to the authenticated user.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'Contact not found',
+        error: 'Not Found',
       },
     },
   })
