@@ -1,6 +1,6 @@
 {
   "name": "contact-book-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Contact Book API built with NestJS",
   "author": "Leandro Vendemiatto Antunes",
   "private": true,
