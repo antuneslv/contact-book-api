@@ -89,10 +89,10 @@ describe('CreateContactUseCase', () => {
       observations: null,
     })
 
-    expect(result.value.email).toBeUndefined()
-    expect(result.value.birthday).toBeUndefined()
-    expect(result.value.category).toBeUndefined()
-    expect(result.value.observations).toBeUndefined()
+    expect(result.value.email).toBeNull()
+    expect(result.value.birthday).toBeNull()
+    expect(result.value.category).toBeNull()
+    expect(result.value.observations).toBeNull()
   })
 
   it('should return not found when the user does not exist', async () => {

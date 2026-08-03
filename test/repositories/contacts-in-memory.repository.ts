@@ -10,17 +10,6 @@ import {
 export class ContactsInMemoryRepository implements ContactsRepository {
   contacts: Contact[] = []
 
-  findContactByIdAndUserId(
-    id: string,
-    userId: string,
-  ): Promise<Contact | null> {
-    throw new Error('Method not implemented.')
-  }
-
-  fetchContacts(userId: string): Promise<Contact[]> {
-    throw new Error('Method not implemented.')
-  }
-
   createContact(userId: string, data: ContactData): Promise<Contact> {
     const date = new Date()
 
@@ -35,6 +24,23 @@ export class ContactsInMemoryRepository implements ContactsRepository {
     this.contacts.push(contact)
 
     return Promise.resolve(contact)
+  }
+
+  fetchContacts(userId: string): Promise<Contact[]> {
+    return Promise.resolve(
+      this.contacts.filter(contact => contact.userId === userId),
+    )
+  }
+
+  findContactByIdAndUserId(
+    id: string,
+    userId: string,
+  ): Promise<Contact | null> {
+    return Promise.resolve(
+      this.contacts.find(
+        contact => contact.id === id && contact.userId === userId,
+      ) ?? null,
+    )
   }
 
   updateContact(

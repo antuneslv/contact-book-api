@@ -12,13 +12,10 @@ import {
 export class ContactsPrismaRepository implements ContactsRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  findContactByIdAndUserId(
-    id: string,
-    userId: string,
-  ): Promise<Contact | null> {
-    return this.prismaService.contact.findFirst({
-      where: {
-        id,
+  createContact(userId: string, data: ContactData): Promise<Contact> {
+    return this.prismaService.contact.create({
+      data: {
+        ...data,
         userId,
       },
     })
@@ -32,10 +29,13 @@ export class ContactsPrismaRepository implements ContactsRepository {
     })
   }
 
-  createContact(userId: string, data: ContactData): Promise<Contact> {
-    return this.prismaService.contact.create({
-      data: {
-        ...data,
+  findContactByIdAndUserId(
+    id: string,
+    userId: string,
+  ): Promise<Contact | null> {
+    return this.prismaService.contact.findFirst({
+      where: {
+        id,
         userId,
       },
     })

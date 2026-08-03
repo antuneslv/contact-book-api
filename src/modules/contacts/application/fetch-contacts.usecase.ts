@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 
 import { UsersRepository } from '@/modules/users/domain/users.repository'
-import { formatCalendarDate, parseCalendarDate } from '@/utils/calendar-date'
+import { formatCalendarDate } from '@/utils/calendar-date'
 import { Either, left, right } from '@/utils/either'
 
 import {
@@ -9,16 +9,7 @@ import {
   ContactsRepository,
 } from '../domain/contacts.repository'
 
-export type CreateContactInput = {
-  name: string
-  phone: string
-  email?: string | null
-  birthday?: string | null
-  category?: ContactCategory | null
-  observations?: string | null
-}
-
-type CreateContactOutput = {
+type ContactItem = {
   id: string
   name: string
   phone: string
@@ -30,38 +21,36 @@ type CreateContactOutput = {
   updatedAt: Date
 }
 
-type CreateContactUseCaseResponse = Either<
+type FetchContactsOutput = {
+  contacts: ContactItem[]
+}
+
+type FetchContactsUseCaseResponse = Either<
   NotFoundException,
-  CreateContactOutput
+  FetchContactsOutput
 >
 
 @Injectable()
-export class CreateContactUseCase {
+export class FetchContactsUseCase {
   constructor(
     private readonly contactsRepository: ContactsRepository,
     private readonly usersRepository: UsersRepository,
   ) {}
 
-  async execute(
-    userId: string,
-    data: CreateContactInput,
-  ): Promise<CreateContactUseCaseResponse> {
+  async execute(userId: string): Promise<FetchContactsUseCaseResponse> {
     const user = await this.usersRepository.findUserById(userId)
 
     if (!user) {
       return left(new NotFoundException('User not found'))
     }
 
-    const contact = await this.contactsRepository.createContact(userId, {
-      name: data.name,
-      phone: data.phone,
-      email: data.email ?? null,
-      birthday: data.birthday ? parseCalendarDate(data.birthday) : null,
-      category: data.category ?? null,
-      observations: data.observations ?? null,
-    })
+    const contacts = await this.contactsRepository.fetchContacts(userId)
 
-    return right({
+    if (!contacts.length) {
+      return right({ contacts: [] })
+    }
+
+    const contactsMapped = contacts.map(contact => ({
       id: contact.id,
       name: contact.name,
       phone: contact.phone,
@@ -71,6 +60,8 @@ export class CreateContactUseCase {
       observations: contact.observations,
       createdAt: contact.createdAt,
       updatedAt: contact.updatedAt,
-    })
+    }))
+
+    return right({ contacts: contactsMapped })
   }
 }

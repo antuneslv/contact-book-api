@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger'
 
 import {
   CONTACT_CATEGORIES,
@@ -24,32 +24,36 @@ export class ContactResponse {
   })
   phone: string
 
-  @ApiPropertyOptional({
-    description: "The contact's e-mail. Omitted when empty.",
+  @ApiProperty({
+    description: "The contact's e-mail, or null when it was left empty.",
     example: 'john.doe@example.com',
+    nullable: true,
   })
-  email?: string
+  email: string | null
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description:
-      "The contact's birthday, as a calendar date with no time zone. Omitted when empty.",
+      "The contact's birthday, as a calendar date with no time zone, or null when it was left empty.",
     example: '1990-01-20',
     format: 'date',
+    nullable: true,
   })
-  birthday?: string
+  birthday: string | null
 
-  @ApiPropertyOptional({
-    description: "The contact's category. Omitted when empty.",
+  @ApiProperty({
+    description: "The contact's category, or null when it was left empty.",
     example: 'FAMILY',
     enum: CONTACT_CATEGORIES,
+    nullable: true,
   })
-  category?: ContactCategory
+  category: ContactCategory | null
 
-  @ApiPropertyOptional({
-    description: "The contact's observations. Omitted when empty.",
+  @ApiProperty({
+    description: "The contact's observations, or null when it was left empty.",
     example: 'John is a great guy!',
+    nullable: true,
   })
-  observations?: string
+  observations: string | null
 
   @ApiProperty({
     description: 'The date and time the contact was created.',
