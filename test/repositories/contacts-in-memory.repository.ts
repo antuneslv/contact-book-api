@@ -57,13 +57,9 @@ export class ContactsInMemoryRepository implements ContactsRepository {
       throw new Error('Contact not found')
     }
 
-    const definedData = Object.fromEntries(
-      Object.entries(data).filter(([, value]) => value !== undefined),
-    )
-
-    const updatedContact = {
+    const updatedContact: Contact = {
       ...this.contacts[contactIndex],
-      ...definedData,
+      ...data,
       updatedAt: new Date(),
     }
 

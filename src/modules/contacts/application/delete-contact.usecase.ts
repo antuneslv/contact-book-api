@@ -4,7 +4,7 @@ import { Either, left, right } from '@/utils/either'
 
 import { ContactsRepository } from '../domain/contacts.repository'
 
-type DeleteUserUseCaseResponse = Either<NotFoundException, null>
+type DeleteContactUseCaseResponse = Either<NotFoundException, null>
 
 @Injectable()
 export class DeleteContactUseCase {
@@ -13,7 +13,7 @@ export class DeleteContactUseCase {
   async execute(
     id: string,
     userId: string,
-  ): Promise<DeleteUserUseCaseResponse> {
+  ): Promise<DeleteContactUseCaseResponse> {
     const contact = await this.contactsRepository.findContactByIdAndUserId(
       id,
       userId,

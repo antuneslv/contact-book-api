@@ -26,13 +26,13 @@ import { type TokenPayload } from '@/crypto/token.service'
 import { CurrentUser } from '@/decorators/current-user.decorator'
 
 import { CreateContactUseCase } from '../application/create-contact.usecase'
+import { DeleteContactUseCase } from '../application/delete-contact.usecase'
 import { FetchContactsUseCase } from '../application/fetch-contacts.usecase'
 import { GetContactUseCase } from '../application/get-contact.usecase'
+import { UpdateContactUseCase } from '../application/update-contact.usecase'
 import { ContactResponse } from './dtos/contact.response'
 import { CreateContactRequest } from './dtos/create-contact.request'
 import { FetchContactsResponse } from './dtos/fetch-contacts.response'
-import { DeleteContactUseCase } from '../application/delete-contact.usecase'
-import { UpdateContactUseCase } from '../application/update-contact.usecase'
 import { UpdateContactRequest } from './dtos/update-contact.request'
 
 @ApiTags('Contacts')
@@ -209,26 +209,26 @@ export class ContactsController {
   @Put(':id')
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: "Update user's contact",
+    summary: 'Replace a contact',
     description:
-      'Full update. E-mail, birthday, category and observations maybe null.',
+      'Full replacement: every field must be sent. E-mail, birthday, category and observations may be sent as null to clear them.',
   })
   @ApiOkResponse({
-    description: 'The user has been successfully updated.',
+    description: 'The contact has been successfully replaced.',
     type: ContactResponse,
   })
   @ApiBadRequestResponse({
-    description: 'Invalid request payload.',
+    description: 'Invalid or incomplete request payload.',
     schema: {
       example: {
         statusCode: 400,
         message: [
           'name should not be empty',
-          'name must be a string',
           'phone should not be empty',
-          'phone must be a string',
-          'birthday must be a calendar date in YYYY-MM-DD format',
-          'observations must be shorter than or equal to 255 characters',
+          'email should not be null or undefined',
+          'birthday should not be null or undefined',
+          'category should not be null or undefined',
+          'observations should not be null or undefined',
         ],
         error: 'Bad Request',
       },
@@ -245,7 +245,8 @@ export class ContactsController {
     },
   })
   @ApiNotFoundResponse({
-    description: 'The requested contact was not found.',
+    description:
+      'No contact with the provided ID belongs to the authenticated user.',
     schema: {
       example: {
         statusCode: 404,
@@ -264,7 +265,7 @@ export class ContactsController {
     },
   })
   async update(
-    @Param() id: string,
+    @Param('id') id: string,
     @CurrentUser() user: TokenPayload,
     @Body() body: UpdateContactRequest,
   ): Promise<ContactResponse> {
@@ -281,11 +282,12 @@ export class ContactsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: "Delete user's contact",
-    description: "Delete the user's contact. This action cannot be undone.",
+    summary: 'Delete a contact',
+    description:
+      'Deletes a contact owned by the authenticated user. This action cannot be undone.',
   })
   @ApiNoContentResponse({
-    description: "The user's contact has been successfully deleted.",
+    description: 'The contact has been successfully deleted.',
   })
   @ApiUnauthorizedResponse({
     description: 'Authentication token is missing or invalid.',
@@ -298,11 +300,12 @@ export class ContactsController {
     },
   })
   @ApiNotFoundResponse({
-    description: 'The requested contact was not found.',
+    description:
+      'No contact with the provided ID belongs to the authenticated user.',
     schema: {
       example: {
         statusCode: 404,
-        message: 'User not found',
+        message: 'Contact not found',
         error: 'Not Found',
       },
     },
@@ -317,7 +320,7 @@ export class ContactsController {
     },
   })
   async delete(
-    @Param() id: string,
+    @Param('id') id: string,
     @CurrentUser() user: TokenPayload,
   ): Promise<void> {
     const result = await this.deleteContactUseCase.execute(id, user.sub)
