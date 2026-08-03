@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { randomUUID } from 'node:crypto'
 
 import {
@@ -50,10 +49,40 @@ export class ContactsInMemoryRepository implements ContactsRepository {
     userId: string,
     data: ContactData,
   ): Promise<Contact> {
-    throw new Error('Method not implemented.')
+    const contactIndex = this.contacts.findIndex(
+      contact => contact.id === id && contact.userId === userId,
+    )
+
+    if (contactIndex === -1) {
+      throw new Error('Contact not found')
+    }
+
+    const definedData = Object.fromEntries(
+      Object.entries(data).filter(([, value]) => value !== undefined),
+    )
+
+    const updatedContact = {
+      ...this.contacts[contactIndex],
+      ...definedData,
+      updatedAt: new Date(),
+    }
+
+    this.contacts[contactIndex] = updatedContact
+
+    return Promise.resolve(updatedContact)
   }
 
   deleteContact(id: string, userId: string): Promise<void> {
-    throw new Error('Method not implemented.')
+    const contactIndex = this.contacts.findIndex(
+      contact => contact.id === id && contact.userId === userId,
+    )
+
+    if (contactIndex === -1) {
+      throw new Error('Contact not found')
+    }
+
+    this.contacts.splice(contactIndex, 1)
+
+    return Promise.resolve()
   }
 }

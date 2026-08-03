@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common'
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -20,6 +31,9 @@ import { GetContactUseCase } from '../application/get-contact.usecase'
 import { ContactResponse } from './dtos/contact.response'
 import { CreateContactRequest } from './dtos/create-contact.request'
 import { FetchContactsResponse } from './dtos/fetch-contacts.response'
+import { DeleteContactUseCase } from '../application/delete-contact.usecase'
+import { UpdateContactUseCase } from '../application/update-contact.usecase'
+import { UpdateContactRequest } from './dtos/update-contact.request'
 
 @ApiTags('Contacts')
 @Controller('contacts')
@@ -28,6 +42,8 @@ export class ContactsController {
     private readonly createContactUseCase: CreateContactUseCase,
     private readonly getContactUseCase: GetContactUseCase,
     private readonly fetchContactsUseCase: FetchContactsUseCase,
+    private readonly updateContactUseCase: UpdateContactUseCase,
+    private readonly deleteContactUseCase: DeleteContactUseCase,
   ) {}
 
   @Post()
@@ -188,5 +204,126 @@ export class ContactsController {
     }
 
     return result.value
+  }
+
+  @Put(':id')
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: "Update user's contact",
+    description:
+      'Full update. E-mail, birthday, category and observations maybe null.',
+  })
+  @ApiOkResponse({
+    description: 'The user has been successfully updated.',
+    type: ContactResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid request payload.',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: [
+          'name should not be empty',
+          'name must be a string',
+          'phone should not be empty',
+          'phone must be a string',
+          'birthday must be a calendar date in YYYY-MM-DD format',
+          'observations must be shorter than or equal to 255 characters',
+        ],
+        error: 'Bad Request',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Authentication token is missing or invalid.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Invalid token',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: 'The requested contact was not found.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'Contact not found',
+        error: 'Not Found',
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+    schema: {
+      example: {
+        statusCode: 500,
+        message: 'Internal server error',
+      },
+    },
+  })
+  async update(
+    @Param() id: string,
+    @CurrentUser() user: TokenPayload,
+    @Body() body: UpdateContactRequest,
+  ): Promise<ContactResponse> {
+    const result = await this.updateContactUseCase.execute(id, user.sub, body)
+
+    if (result.isLeft()) {
+      throw result.value
+    }
+
+    return result.value
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: "Delete user's contact",
+    description: "Delete the user's contact. This action cannot be undone.",
+  })
+  @ApiNoContentResponse({
+    description: "The user's contact has been successfully deleted.",
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Authentication token is missing or invalid.',
+    schema: {
+      example: {
+        statusCode: 401,
+        message: 'Invalid token',
+        error: 'Unauthorized',
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: 'The requested contact was not found.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'User not found',
+        error: 'Not Found',
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+    schema: {
+      example: {
+        statusCode: 500,
+        message: 'Internal server error',
+      },
+    },
+  })
+  async delete(
+    @Param() id: string,
+    @CurrentUser() user: TokenPayload,
+  ): Promise<void> {
+    const result = await this.deleteContactUseCase.execute(id, user.sub)
+
+    if (result.isLeft()) {
+      throw result.value
+    }
   }
 }
